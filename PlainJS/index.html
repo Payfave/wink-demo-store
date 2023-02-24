@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Cache-Control" content="no-cache" />
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>WinkPay</title>
+  <link rel="icon" href="./images/favicon.ico" />
+  <meta name="description" content="WinkPay" />
+  <meta name="author" content="Wink" />
+  <link href="./css/bootstrap.min.css" rel="stylesheet" />
+  <link href="./css/style.css" rel="stylesheet" />
+  <link rel="stylesheet" href="./css/responsive.css" />
+  <script src="./js/jquery.min.js"></script>
+  <script src="./js/bootstrap.min.js"></script>
+  <script src="./js/winklogin.module.js"></script>
+  <script type="text/javascript" src="./js/iframeResizer.min.js"></script>
+  <script src="./js/configs/config.js"></script>
+  <script src="./js/jquery-idle-detect.js"></script>
+  <script src="./js/common-constants.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <script src="https://qa.winkpayments.io/jssdk/v0.2-internal/winkpayment.js"></script>
+</head>
+
+<body class="wink-pay-testapp-redirect container">
+  <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+    <symbol id="check-circle-fill" fill="currentColor" viewBox="0 0 16 16">
+      <path
+        d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+    </symbol>
+    <symbol id="info-fill" fill="currentColor" viewBox="0 0 16 16">
+      <path
+        d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" />
+    </symbol>
+    <symbol id="exclamation-triangle-fill" fill="currentColor" viewBox="0 0 16 16">
+      <path
+        d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+    </symbol>
+  </svg>
+  <div id="alertSection" style="display: none;">
+    <div id="alertSuccess" class="alert alert-success d-flex align-items-center toastMessage" role="alert">
+      <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:">
+        <use xlink:href="#check-circle-fill" />
+      </svg>
+      <div id="displayToastMessage">
+        &nbsp;
+      </div>
+    </div>
+    <div id="alertError" class="alert alert-danger d-flex align-items-center toastMessage" role="alert">
+      <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:">
+        <use xlink:href="#exclamation-triangle-fill" />
+      </svg>
+      <div id="displayErrorToastMessage" style="margin-left: 10px;">
+      </div>
+    </div>
+  </div>
+  <div id="overlayiFrame"></div>
+  <section id="center-area" style="position: static;">
+    <div id="checkout-screen" class=" common-container centaer-box">
+      <header>
+        <div>
+          <img src="./images/merchant-img.png" alt="Merchant Logo">
+        </div>
+        <div class="logout" style="display: none;"></div>
+      </header>
+
+      <div id="screen1" class="start-section1 ">
+        <div class="row mt-5 " style="justify-content: center;">
+          <div id="home-page" class="row" style="justify-content: center;">
+            <div class="col-md-12 col-sm-12 col-xs-12 input-group" style='text-align:center !important;'>
+              <span class="input-group-text">$</span>
+              <input id='checkout-amount' type='number' placeholder="Enter amount" class="form-control" name='amount'
+                oninput="onAmountChange()"></input>
+            </div>
+            <div class="col-md-12 col-sm-12 col-xs-12" style="text-align: center;">
+              <p id="amountError" style="font-size: 12px; margin-top: 10px;"></p>
+            </div>
+            <div class="col-md-12 col-sm-12 col-xs-12" style="text-align: center;">
+              <label class="innerText">Payment Mode</label>
+              <select class="dropbox" name="paymentOption" id="paymentOption" oninput="selectMode(event)">
+                <option value="redirect">Redirect</option>
+                <option value="embeddediFrame">Embedded Iframe</option>
+                <option value="overlayiFrame">Overlay Iframe</option>
+              </select>
+            </div>
+            <div class="col-md-12 col-sm-12 col-xs-12" style="text-align: center;">
+              <div id="initLoader" class="loader"></div>
+              <div style="display: inline;">
+                <a id="checkout" class="common-cta active-background checkout m-3 btn disabled"
+                  href="javascript:void(0)" style="display:inline-block;" onclick="login('checkout');"> <img
+                    src="./images/wink-button.png" alt="wink Logo">
+                  &nbsp; Checkout </a>
+              </div>
+              <div style="display: inline;">
+                <a id="subscribe" class="common-cta active-background subscribe m-3 btn disabled"
+                  href="javascript:void(0)" style="display:inline-block;" onclick="login('subscribe');"> <img
+                    src="./images/wink-button.png" alt="wink Logo">
+                  &nbsp; Subscribe</a>
+              </div>
+              <div style="display: inline;">
+                <a id="guestCheckOut" class="common-cta active-background guestCheckOut m-3 btn disabled"
+                  href="javascript:void(0)" style="display:inline-block;" onclick="login('guest')"> <img
+                    src="./images/wink-button.png" alt="wink Logo">
+                  &nbsp; Guest Checkout </a>
+              </div>
+            </div>
+          </div>
+          <div id="embeddediFrame" style="height: 400px; display: none;"></div>
+          <div class="col-md-12 col-sm-12 col-xs-12" style="display:block; justify-content: center;">
+            <p id="transaction-details" class="transaction-details" href="javascript:void(0)"
+              style="display:none; text-align: center; color: #349522;">
+              <label style="color: black;"><b>Transaction Details:</b></label><br />
+              <label>Transaction Id: &nbsp;</label><label id="display-transaction-id"></label><br />
+              <label>Amount: &nbsp; </label><label id="display-transaction-amount"></label><br />
+              <label>Currency code: &nbsp;</label><label id="display-transaction-currency"></label><br />
+            </p>
+          </div>
+          <div id="mit-section" class="container" style="display: none;">
+            <div style="text-align: center;">
+              <h3 class="mit-header .h2">Merchant Initiated Transaction</h3>
+            </div>
+            <div class="form-group mit-field">
+              <label for="mit--winkPayAPIKey" style="font-size: 15px;">Wink Pay API Key <span
+                  style="color: red;">*</span>
+              </label>
+              <input id="mit-winkPayAPIKey" name="winkPayAPIKey" placeholder="Enter Wink Pay API Key"
+                oninput="onChangeMIT(event)" required class="form-control">
+            </div>
+            <div id="wink-pay-error" style="color: red; font-size: 15px; text-align: center; margin-bottom: 10px;">
+            </div>
+            <div class="form-group mit-field">
+              <label style="font-size: 15px;">Wink Card Token</label>
+              <input name="winkCardToken" id="winkCardTokenMIT-value" value="winkCardToken" readonly
+                class="form-control" placeholder="Wink Card Token" />
+            </div>
+            <div class="form-group mit-field">
+              <label style="font-size: 15px;">Amount (in USD) <span style="color: red;">*</span></label>
+              <div class="input-group">
+                <span class="input-group-text">$</span>
+                <input id="mit-amount" name="amount" type="number" placeholder="Enter Amount" required
+                  oninput="onChangeMIT(event)" class="form-control"></input>
+              </div>
+
+            </div>
+            <div id="pay-error" style="color: red; font-size: 15px; text-align: center; margin-bottom: 10px;"></div>
+            <div class="form-group mit-field">
+              <label style="font-size: 15px;">Description <span style="color: red;">*</span></label>
+              <input id="mit-description" name="description" type="text" placeholder="Enter description" required
+                oninput="onChangeMIT(event)" class="form-control" />
+            </div>
+            <div id="description-error" style="color: red; font-size: 15px; text-align: center; margin-bottom: 10px;">
+            </div>
+            <div id="showLoader" class="loader"></div>
+            <div class="form-group" style="text-align: center;">
+              <button type="submit" id="back-call" class="btn btn-primary" style="margin-right: 20px;"
+                onclick="backCall()">Back</button>
+              <button type="submit" id="mit-call" class="btn btn-primary mit-call disabled"
+                onclick="purchaseCall()">MIT</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- Wink pay script to integrate WInkLogin and WinkPayment in Iframe -->
+  <script src="./js/winkpayScript.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+</body>
+
+</html>
