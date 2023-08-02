@@ -13,16 +13,18 @@
   <link href="./css/bootstrap.min.css" rel="stylesheet" />
   <link href="./css/style.css" rel="stylesheet" />
   <link rel="stylesheet" href="./css/responsive.css" />
-  <script src="./js/jquery.min.js"></script>
-  <script src="./js/bootstrap.min.js"></script>
-  <script src="./js/winklogin.module.js"></script>
-  <script type="text/javascript" src="./js/iframeResizer.min.js"></script>
   <script src="./js/configs/config.js"></script>
-  <script src="./js/jquery-idle-detect.js"></script>
+  <script src="./js/jquery.min.js"></script>
   <script src="./js/common-constants.js"></script>
+  <script type="text/javascript" src="https://www.unpkg.com/wink-auth-js@2.1.1/public/winklogin.module.js"></script>
+  <script src="./js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="./js/iframeResizer.min.js"></script>
+  <script src="./js/loadWinkPaymentScript.js"></script>
+  <script src="./js/jquery-idle-detect.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-  <script src="https://qa.winkpayments.io/jssdk/v0.2-internal/winkpayment.js"></script>
+  <link href="https://buttons.winklogin.com/src/css/button.css" rel="stylesheet" />
+  <link href="https://buttons.winklogin.com/src/css/styles.css" rel="stylesheet" />
 </head>
 
 <body class="wink-pay-testapp-redirect container">
@@ -40,6 +42,7 @@
         d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
     </symbol>
   </svg>
+
   <div id="alertSection" style="display: none;">
     <div id="alertSuccess" class="alert alert-success d-flex align-items-center toastMessage" role="alert">
       <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:">
@@ -58,22 +61,77 @@
     </div>
   </div>
   <div id="overlayiFrame"></div>
+  <div id="alertSection" style="display: none;">
+    <div id="alertSuccess" class="alert alert-success d-flex align-items-center toastMessage" role="alert">
+      <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:">
+        <use xlink:href="#check-circle-fill" />
+      </svg>
+      <div id="displayToastMessage">
+        &nbsp;
+      </div>
+    </div>
+    <div id="alertError" class="alert alert-danger d-flex align-items-center toastMessage" role="alert">
+      <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:">
+        <use xlink:href="#exclamation-triangle-fill" />
+      </svg>
+      <div id="displayErrorToastMessage" style="margin-left: 10px;">
+      </div>
+    </div>
+  </div>
   <section id="center-area" style="position: static;">
     <div id="checkout-screen" class=" common-container centaer-box">
       <header>
         <div>
           <img src="./images/merchant-img.png" alt="Merchant Logo">
         </div>
-        <div class="logout" style="display: none;"></div>
+        <div id="loginSection" class="signin">
+
+          <button id="signinButton" class="wink-oauth-button wink-oauth-button--primary wink-oauth-button--fit-to-text"
+            onclick="LoginToWink()">
+            <img src="https://buttons.winklogin.com/src/images/semicolon-white.svg" alt='login button' />
+            Sign In
+          </button>
+
+          <button id="logoutButton" class="wink-oauth-button wink-oauth-button--primary wink-oauth-button--fit-to-text"
+            onclick="signOut()" style="display:none;">
+            <img src="https://buttons.winklogin.com/src/images/semicolon-white.svg" alt='logout button' /> Logout
+          </button>
+        </div>
       </header>
 
       <div id="screen1" class="start-section1 ">
+        <div class="d-flex justify-content align-items-center">
+
+          <div id="initLoader" class="loader">
+            <img src="./images/Wink-Loading.gif" />
+          </div>
+        </div>
         <div class="row mt-5 " style="justify-content: center;">
           <div id="home-page" class="row" style="justify-content: center;">
+            <div class="col-md-12 col-sm-12 col-xs-12 input-group"
+              style='text-align:center !important; margin-bottom: 6px;'>
+              <span class="input-group-text"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                  fill="currentColor" class="bi bi-person" viewBox="0 0 16 16">
+                  <path
+                    d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4Zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10Z" />
+                </svg></span>
+              <select class="form-select" name="merchantOption" id="merchantOption" oninput="selectMerchant(event)">
+                <option value="selectMerchant">Select Merchant</option>
+                <option value="WinkDemoStore">WinkDemoStore</option>
+                <option value="PhoenixGate">PhoenixGate</option>
+              </select>
+            </div>
             <div class="col-md-12 col-sm-12 col-xs-12 input-group" style='text-align:center !important;'>
-              <span class="input-group-text">$</span>
-              <input id='checkout-amount' type='number' placeholder="Enter amount" class="form-control" name='amount'
-                oninput="onAmountChange()"></input>
+              <span class="input-group-text">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                  class="bi bi-currency-dollar" viewBox="0 0 16 16">
+                  <path
+                    d="M4 10.781c.148 1.667 1.513 2.85 3.591 3.003V15h1.043v-1.216c2.27-.179 3.678-1.438 3.678-3.3 0-1.59-.947-2.51-2.956-3.028l-.722-.187V3.467c1.122.11 1.879.714 2.07 1.616h1.47c-.166-1.6-1.54-2.748-3.54-2.875V1H7.591v1.233c-1.939.23-3.27 1.472-3.27 3.156 0 1.454.966 2.483 2.661 2.917l.61.162v4.031c-1.149-.17-1.94-.8-2.131-1.718H4zm3.391-3.836c-1.043-.263-1.6-.825-1.6-1.616 0-.944.704-1.641 1.8-1.828v3.495l-.2-.05zm1.591 1.872c1.287.323 1.852.859 1.852 1.769 0 1.097-.826 1.828-2.2 1.939V8.73l.348.086z" />
+                </svg>
+              </span>
+              <input id='checkout-amount' type='number' step="0.01" placeholder="Enter amount"
+                class="form-control allow-two-decimals disabled" name='amount' oninput="onAmountChange(event)"
+                tabindex="-1"></input>
             </div>
             <div class="col-md-12 col-sm-12 col-xs-12" style="text-align: center;">
               <p id="amountError" style="font-size: 12px; margin-top: 10px;"></p>
@@ -86,29 +144,35 @@
                 <option value="overlayiFrame">Overlay Iframe</option>
               </select>
             </div>
-            <div class="col-md-12 col-sm-12 col-xs-12" style="text-align: center;">
-              <div id="initLoader" class="loader"></div>
-              <div style="display: inline;">
-                <a id="checkout" class="common-cta active-background checkout m-3 btn disabled"
-                  href="javascript:void(0)" style="display:inline-block;" onclick="login('checkout');"> <img
-                    src="./images/wink-button.png" alt="wink Logo">
-                  &nbsp; Checkout </a>
+            <div class="row justify-content-evenly col-md-12 col-sm-12 col-xs-12 responsive"
+              style="padding: 0px; margin-top: 2%;">
+
+              <div class="col-md-4 col-sm-4 col-xs-4 btn-align" style="align-items: center; padding: 0;">
+                <button id="guestCheckOut"
+                  class="mt-3 wink-oauth-button wink-oauth-button--primary wink-oauth-button--fit-to-text btn-align guestCheckOut disabled homeButton"
+                  href="javascript:void(0)" onclick="login('guest')"><img
+                    src="https://buttons.winklogin.com/src/images/semicolon-white.svg" alt='Payment button' /> Payment
+                </button>
               </div>
-              <div style="display: inline;">
-                <a id="subscribe" class="common-cta active-background subscribe m-3 btn disabled"
-                  href="javascript:void(0)" style="display:inline-block;" onclick="login('subscribe');"> <img
-                    src="./images/wink-button.png" alt="wink Logo">
-                  &nbsp; Subscribe</a>
+              <div class="col-md-4 col-sm-4 col-xs-4 btn-align" style="align-items: center; padding:0">
+                <button type=" button" id="checkout"
+                  class="mt-3 wink-oauth-button wink-oauth-button--primary wink-oauth-button--fit-to-text btn-align checkout  disabled homeButton"
+                  href="javascript:void(0)" onclick="login('checkout');">
+                  <img src="https://buttons.winklogin.com/src/images/semicolon-white.svg" alt='Checkout button' />
+                  Checkout
+                </button>
               </div>
-              <div style="display: inline;">
-                <a id="guestCheckOut" class="common-cta active-background guestCheckOut m-3 btn disabled"
-                  href="javascript:void(0)" style="display:inline-block;" onclick="login('guest')"> <img
-                    src="./images/wink-button.png" alt="wink Logo">
-                  &nbsp; Guest Checkout </a>
+              <div class="col-md-4 col-sm-4 col-xs-4 btn-align" style="align-items: center; padding: 0;">
+                <button type="button" id="subscribe"
+                  class="mt-3 wink-oauth-button wink-oauth-button--primary wink-oauth-button--fit-to-text btn-align subscribe disabled homeButton"
+                  href="javascript:void(0)" onclick="login('subscribe');"><img
+                    src="https://buttons.winklogin.com/src/images/semicolon-white.svg"
+                    alt='subscribe button' />Subscribe
+                </button>
               </div>
+
             </div>
           </div>
-          <div id="embeddediFrame" style="height: 400px; display: none;"></div>
           <div class="col-md-12 col-sm-12 col-xs-12" style="display:block; justify-content: center;">
             <p id="transaction-details" class="transaction-details" href="javascript:void(0)"
               style="display:none; text-align: center; color: #349522;">
@@ -141,7 +205,7 @@
               <div class="input-group">
                 <span class="input-group-text">$</span>
                 <input id="mit-amount" name="amount" type="number" placeholder="Enter Amount" required
-                  oninput="onChangeMIT(event)" class="form-control"></input>
+                  oninput="onChangeMIT(event)" class="form-control allow-two-decimals"></input>
               </div>
 
             </div>
@@ -153,18 +217,24 @@
             </div>
             <div id="description-error" style="color: red; font-size: 15px; text-align: center; margin-bottom: 10px;">
             </div>
-            <div id="showLoader" class="loader"></div>
+            <div id="showLoader" style="text-align: center; display: none;"><img src="./images/Wink-Loading.gif"
+                alt="loader" width="100px" height="100px" /></div>
             <div class="form-group" style="text-align: center;">
-              <button type="submit" id="back-call" class="btn btn-primary" style="margin-right: 20px;"
-                onclick="backCall()">Back</button>
-              <button type="submit" id="mit-call" class="btn btn-primary mit-call disabled"
-                onclick="purchaseCall()">MIT</button>
+              <button type="submit" id="mit-call"
+                class="wink-oauth-button wink-oauth-button--primary wink-oauth-button--fit-to-text mit-call disabled homeButton"
+                onclick="purchaseCall()" style="display: inline-flex;">
+                <img src="https://buttons.winklogin.com/src/images/semicolon-white.svg" alt='MIT button' />
+
+                MIT
+              </button>
+
             </div>
           </div>
         </div>
       </div>
     </div>
   </section>
+  <div id="embeddediFrame" style="height: 900px; display: none;"></div>
   <!-- Wink pay script to integrate WInkLogin and WinkPayment in Iframe -->
   <script src="./js/winkpayScript.js"></script>
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>

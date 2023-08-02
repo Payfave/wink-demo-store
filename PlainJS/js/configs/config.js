@@ -1,1 +1,19 @@
-window.winkEnvValues = { basePath: '', apiEndPoint: 'https://qa-api.winkpayments.io/v1', environment: 'qa', winkLoginAuthURL: 'https://auth.winklogin.com/auth', winkLoginRealm: 'wink', clientIdOfPaymentMerchant: 'winkdemostore', clientIdOfCheckoutMerchant: 'magentoTestMerchant', winkPaymentURL: 'https://qa.winkpayments.io/', testAppURL: 'https://qatestapp.winkpayments.io', winkPaymentSdkUrl: 'https://qa.winkpayments.io/jssdk/v0.3-internal/winkpayment.js', integrityHash: 'sha256-wtBsV6HwOqs39+NbQ/kSTUZJFHIKP104TYjQffAPPOc=', paymentMerchantAuthKey: { winkApiUsername: 'wink_Test_UZHZjXshiKWichFlQGU', winkApiPassword: '' }, checkoutMerchantAuthKey: { winkApiUsername: 'wink_Test_OP8nvzn5PI5IUSwObgN', winkApiPassword: '' } };
+window.winkEnvValues = {
+  basePath: '',
+  apiEndPoint: 'https://dev-api.winkpayments.io/v1',
+  environment: 'local',
+  winkLoginAuthURL: 'https://qa-wink-oauth2-keycloak.azurewebsites.net/auth',
+  winkLoginRealm: 'wink',
+  clientIdOfPaymentMerchant: 'qa-winkdemostore',
+  clientIdOfCheckoutMerchant: 'qa-winkdemostore',
+  clientIdOfSubscribeMerchant: 'qa-winkdemostore',
+  winkPaymentURL: 'http://localhost:3001/',
+  testAppURL: 'http://localhost:3000',
+  winkPaymentSdkUrl: 'http://localhost:3001/jssdk/v0.4-internal/winkpayment.js',
+  integrityHash: 'sha256-kk2vxWQAv6iI2m8gNteqiaHhNJ8YUQ9YDi/43KjiTsA=',
+  paymentMerchantAuthKey: 'wink_Test_1B8xPauHT4XI3614k3z',
+  checkoutMerchantAuthKey: 'wink_Test_1B8xPauHT4XI3614k3z',
+  subscribeMerchantAuthKey: 'wink_Test_1B8xPauHT4XI3614k3z',
+  paymentId: '491',
+  integrationToken: 'qbyno117mep0c8yi7h2eexwayuvyu1dg',
+};
