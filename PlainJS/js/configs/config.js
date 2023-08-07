@@ -8,5 +8,5 @@ window.winkEnvValues = {
   testAppURL: 'http://localhost:3000',
   winkPaymentSdkUrl:
     'https://stage.winkpayments.io/jssdk/v0.4-internal/winkpayment.js',
-  integrityHash: 'sha256-kk2vxWQAv6iI2m8gNteqiaHhNJ8YUQ9YDi/43KjiTsA=',
+  integrityHash: 'sha256-kk2vxWQAv6iI2m8gNteqiaHhNJ8YUQ9YDi/43KjiTsA=', // get updated integrity hash from https://github.com/Payfave/wink-demo-store/wiki
 };
