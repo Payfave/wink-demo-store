@@ -763,7 +763,7 @@ function getKey() {
     case 'local':
       if (
         merchant.local[localStorage.getItem('merchantOption')] ===
-        'qa-winkdemostore'
+        'stage-winkdemostore'
       ) {
         key = merchant.local.winkDemoStoreMerchantAuthKey;
       } else if (
